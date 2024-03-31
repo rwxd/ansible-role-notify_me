@@ -11,7 +11,7 @@ The correct binary for the operating system & architecture is automatically choo
 ```yaml
 roles:
   - name: notify_me
-    src: https://github.com/rwxd/ansible_role_notify_me.git
+    src: https://github.com/rwxd/ansible-role-notify_me.git
     scm: git
     version: main
 ```
