@@ -11,8 +11,6 @@ jobs:
   semantic-release:
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs:
-      - pre-commit
     steps:
       - uses: actions/checkout@v4
         with:
