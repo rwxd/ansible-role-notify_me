@@ -52,3 +52,20 @@
     state: latest
     disable_gpg_check: true
   become: true
+
+- name: Download & install deb package
+  when: ansible_os_family == "Debian"
+  ansible.builtin.apt:
+    deb: "{{ download_url }}.deb"
+    state: latest
+  become: true
+
+- name: Download & install binary
+  when: ansible_os_family not in ['RedHat', 'Debian']
+  block:
+    - name: Download binary
+      ansible.builtin.get_url:
+        url: "{{ download_url }}"
+        dest: "/usr/bin/notify-me"
+        mode: '0755'
+      become: true
