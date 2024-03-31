@@ -16,6 +16,8 @@ roles:
     version: main
 ```
 
+`my-playbook.yaml`
+
 ```yaml
 - name: My Playbook
   hosts: all
