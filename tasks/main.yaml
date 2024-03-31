@@ -1,0 +1,54 @@
+---
+- name: Check if cli notify-me is installed
+  ansible.builtin.stat:
+    path: /usr/bin/notify-me
+  register: notify_me_installed
+
+- name: Show ansible system
+  ansible.builtin.debug:
+    var: ansible_system
+    verbosity: 1
+
+- name: Show ansible architecture
+  ansible.builtin.debug:
+    var: ansible_architecture
+    verbosity: 1
+
+- name: Set architecture amd64
+  ansible.builtin.set_fact:
+    architecture: "amd64"
+  when: ansible_architecture == "x86_64"
+
+- name: Set architecture arm64
+  ansible.builtin.set_fact:
+    architecture: "arm64"
+  when: ansible_architecture == "aarch64"
+
+- name: Fail when system is not supported
+  ansible.builtin.fail:
+    msg: "System {{ ansible_system }} & {{ architecture }} is not supported"
+  when:
+    - ansible_system | lower not in ['darwin', 'linux', 'windows']
+    - architecture | lower not in ['amd64', 'arm64']
+
+- name: Set file name
+  ansible.builtin.set_fact:
+    file_name: "notify-me_{{ notify_me_version }}_{{ansible_system | lower}}_{{ architecture }}"
+  when:
+    - ansible_system | lower in ['darwin', 'linux', 'windows']
+    - architecture | lower in ['amd64', 'arm64']
+
+- name: Set download url
+  ansible.builtin.set_fact:
+    download_url: "https://github.com/rwxd/notify-me/releases/download/v{{ notify_me_version}}/{{ file_name }}"
+  when:
+    - ansible_system | lower in ['darwin', 'linux', 'windows']
+    - architecture | lower in ['amd64', 'arm64']
+
+- name: Download & install rpm package
+  when: ansible_os_family == "RedHat"
+  ansible.builtin.dnf:
+    name: "{{ download_url }}.rpm"
+    state: latest
+    disable_gpg_check: true
+  become: true
